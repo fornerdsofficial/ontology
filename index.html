@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>온톨로지(Ontology)의 이해</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>tailwind.config={theme:{extend:{colors:{primary:'#4F46E5',secondary:'#10B981'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
+<style>
+:where([class^="ri-"])::before { content: "\f3c2"; }
+body {
+font-family: 'Noto Sans KR', sans-serif;
+color: #333;
+}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+-webkit-appearance: none;
+margin: 0;
+}
+.custom-checkbox {
+appearance: none;
+width: 1.25rem;
+height: 1.25rem;
+border: 2px solid #d1d5db;
+border-radius: 4px;
+position: relative;
+cursor: pointer;
+transition: all 0.2s;
+}
+.custom-checkbox:checked {
+background-color: #4F46E5;
+border-color: #4F46E5;
+}
+.custom-checkbox:checked::after {
+content: '';
+position: absolute;
+left: 6px;
+top: 2px;
+width: 5px;
+height: 10px;
+border: solid white;
+border-width: 0 2px 2px 0;
+transform: rotate(45deg);
+}
+.ontology-chart {
+background: linear-gradient(to bottom, rgba(79, 70, 229, 0.05), rgba(16, 185, 129, 0.05));
+}
+.gradient-bg {
+background: linear-gradient(135deg, rgba(79, 70, 229, 0.05) 0%, rgba(16, 185, 129, 0.05) 100%);
+}
+</style>
+</head>
+<body class="bg-white min-h-screen">
+<!-- 헤더 -->
+<header class="sticky top-0 z-50 bg-white shadow-sm">
+<div class="container mx-auto px-4 py-4 flex items-center justify-between">
+<div class="flex items-center">
+<a href="#" class="text-2xl font-['Pacifico'] text-primary mr-10">logo</a>
+<nav class="hidden md:flex space-x-8">
+<a href="#intro" class="text-gray-700 hover:text-primary font-medium transition-colors">소개</a>
+<a href="#components" class="text-gray-700 hover:text-primary font-medium transition-colors">구성요소</a>
+<a href="#importance" class="text-gray-700 hover:text-primary font-medium transition-colors">중요성</a>
+<a href="#difference" class="text-gray-700 hover:text-primary font-medium transition-colors">차이점</a>
+<a href="#process" class="text-gray-700 hover:text-primary font-medium transition-colors">적용과정</a>
+</nav>
+</div>
+<div class="flex items-center space-x-4">
+<div class="relative">
+<input type="text" placeholder="검색" class="pl-10 pr-4 py-2 rounded-full text-sm border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+<div class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 flex items-center justify-center text-gray-400">
+<i class="ri-search-line"></i>
+</div>
+</div>
+<button class="bg-primary text-white px-4 py-2 rounded-button hover:bg-opacity-90 transition-colors whitespace-nowrap">시작하기</button>
+</div>
+</div>
+</header>
+<!-- 메인 콘텐츠 -->
+<main class="container mx-auto px-4 py-8">
+<!-- 사이드바와 메인 콘텐츠 레이아웃 -->
+<div class="flex flex-col md:flex-row gap-8">
+<!-- 사이드바 -->
+<aside class="md:w-1/4 lg:w-1/5 hidden md:block">
+<div class="sticky top-24 bg-white rounded-lg shadow-sm p-6">
+<h3 class="text-lg font-bold mb-4">목차</h3>
+<ul class="space-y-3">
+<li>
+<a href="#intro" class="text-primary font-medium flex items-center">
+<div class="w-5 h-5 flex items-center justify-center mr-2">
+<i class="ri-arrow-right-s-line"></i>
+</div>
+온톨로지 소개
+</a>
+</li>
+<li>
+<a href="#components" class="text-gray-700 hover:text-primary transition-colors flex items-center">
+<div class="w-5 h-5 flex items-center justify-center mr-2">
+<i class="ri-arrow-right-s-line"></i>
+</div>
+구성요소
+</a>
+</li>
+<li>
+<a href="#importance" class="text-gray-700 hover:text-primary transition-colors flex items-center">
+<div class="w-5 h-5 flex items-center justify-center mr-2">
+<i class="ri-arrow-right-s-line"></i>
+</div>
+중요성
+</a>
+</li>
+<li>
+<a href="#difference" class="text-gray-700 hover:text-primary transition-colors flex items-center">
+<div class="w-5 h-5 flex items-center justify-center mr-2">
+<i class="ri-arrow-right-s-line"></i>
+</div>
+기존 데이터와의 차이
+</a>
+</li>
+<li>
+<a href="#process" class="text-gray-700 hover:text-primary transition-colors flex items-center">
+<div class="w-5 h-5 flex items-center justify-center mr-2">
+<i class="ri-arrow-right-s-line"></i>
+</div>
+적용 과정
+</a>
+</li>
+</ul>
+<div class="mt-8 p-4 bg-gray-50 rounded-lg">
+<h4 class="font-medium text-gray-800 mb-2">학습 자료</h4>
+<ul class="space-y-2 text-sm">
+<li>
+<a href="#" class="text-primary hover:underline flex items-center">
+<div class="w-4 h-4 flex items-center justify-center mr-2">
+<i class="ri-file-text-line"></i>
+</div>
+온톨로지 기초 PDF
+</a>
+</li>
+<li>
+<a href="#" class="text-primary hover:underline flex items-center">
+<div class="w-4 h-4 flex items-center justify-center mr-2">
+<i class="ri-video-line"></i>
+</div>
+온톨로지 구축 영상
+</a>
+</li>
+<li>
+<a href="#" class="text-primary hover:underline flex items-center">
+<div class="w-4 h-4 flex items-center justify-center mr-2">
+<i class="ri-book-open-line"></i>
+</div>
+용어 사전
+</a>
+</li>
+</ul>
+</div>
+</div>
+</aside>
+<!-- 메인 콘텐츠 영역 -->
+<div class="md:w-3/4 lg:w-4/5">
+<!-- 헤더 섹션 -->
+<section class="mb-12">
+<h1 class="text-4xl font-bold text-gray-900 mb-6">온톨로지(Ontology)의 이해</h1>
+<p class="text-lg text-gray-700 leading-relaxed">
+온톨로지는 특정 분야나 영역의 지식을 체계적으로 정리하고 개념 간의 관계를 명확하게 표현하는 지식 구조입니다.
+이 페이지에서는 온톨로지의 기본 개념부터 실제 적용 방법까지 단계별로 알아보겠습니다.
+</p>
+</section>
+<!-- 온톨로지 소개 섹션 -->
+<section id="intro" class="mb-16">
+<h2 class="text-2xl font-bold text-gray-900 mb-6">온톨로지란 무엇인가?</h2>
+<div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+<p class="text-gray-700 mb-4">
+온톨로지(Ontology)는 특정 분야나 영역의 지식을 체계적으로 정리하고 개념 간의 관계를 명확하게 표현하는 지식 구조입니다.
+쉽게 말해, 특정 분야에 대한 '지식 지도'라고 생각할 수 있습니다.
+</p>
+<p class="text-gray-700">
+우리가 머릿속에 가지고 있는 개념들과 그 관계를 컴퓨터가 이해할 수 있는 방식으로 표현한 것이라고 볼 수 있습니다.
+예를 들어, '사과'라는 개념이 있다면, 이것이 '과일'의 한 종류이고, '빨간색' 또는 '초록색'을 가질 수 있으며,
+'달콤한 맛'이라는 속성을 가진다는 관계를 명확하게 정의합니다.
+</p>
+</div>
+<!-- 온톨로지 시각화 예시 -->
+<div class="bg-white rounded-lg shadow-sm overflow-hidden mb-8">
+<div class="p-6">
+<h3 class="text-xl font-medium text-gray-900 mb-4">온톨로지 구조 시각화</h3>
+<p class="text-gray-700 mb-4">
+아래 다이어그램은 '과일' 개념을 중심으로 한 간단한 온톨로지 구조를 보여줍니다.
+개념 간의 관계와 속성이 어떻게 연결되는지 확인해보세요.
+</p>
+</div>
+<div id="ontologyChart" class="ontology-chart w-full h-96"></div>
+</div>
+<!-- 실제 사례 -->
+<div class="bg-gray-50 rounded-lg p-6">
+<h3 class="text-xl font-medium text-gray-900 mb-4">실제 활용 사례</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="bg-white rounded-lg shadow-sm p-4">
+<div class="w-10 h-10 flex items-center justify-center bg-primary bg-opacity-10 rounded-full mb-3">
+<i class="ri-search-line text-primary ri-lg"></i>
+</div>
+<h4 class="font-medium text-gray-900 mb-2">지능형 검색 시스템</h4>
+<p class="text-sm text-gray-700">
+구글의 Knowledge Graph는 온톨로지를 활용하여 검색어의 의미를 이해하고 관련된 정보를 제공합니다.
+</p>
+</div>
+<div class="bg-white rounded-lg shadow-sm p-4">
+<div class="w-10 h-10 flex items-center justify-center bg-secondary bg-opacity-10 rounded-full mb-3">
+<i class="ri-heart-pulse-line text-secondary ri-lg"></i>
+</div>
+<h4 class="font-medium text-gray-900 mb-2">의료 정보 시스템</h4>
+<p class="text-sm text-gray-700">
+SNOMED CT는 의료 용어를 체계화한 온톨로지로, 전 세계 의료 시스템에서 정보 교환에 활용됩니다.
+</p>
+</div>
+</div>
+</div>
+</section>
+<!-- 구성요소 섹션 -->
+<section id="components" class="mb-16">
+<h2 class="text-2xl font-bold text-gray-900 mb-6">온톨로지의 구성요소</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+<div class="bg-white rounded-lg shadow-sm p-6">
+<div class="w-12 h-12 flex items-center justify-center bg-primary bg-opacity-10 rounded-full mb-4">
+<i class="ri-layout-grid-line text-primary ri-xl"></i>
+</div>
+<h3 class="text-xl font-medium text-gray-900 mb-3">클래스(개념)</h3>
+<p class="text-gray-700">
+온톨로지에서 표현하고자 하는 영역의 주요 개념들입니다. 예를 들어 '사과', '자동차' 등이 클래스가 될 수 있습니다.
+</p>
+</div>
+<div class="bg-white rounded-lg shadow-sm p-6">
+<div class="w-12 h-12 flex items-center justify-center bg-primary bg-opacity-10 rounded-full mb-4">
+<i class="ri-list-check-2 text-primary ri-xl"></i>
+</div>
+<h3 class="text-xl font-medium text-gray-900 mb-3">속성</h3>
+<p class="text-gray-700">
+클래스가 가질 수 있는 특성이나 성질을 나타냅니다. 색상, 크기, 기능 등이 속성의 예입니다.
+</p>
+</div>
+<div class="bg-white rounded-lg shadow-sm p-6">
+<div class="w-12 h-12 flex items-center justify-center bg-primary bg-opacity-10 rounded-full mb-4">
+<i class="ri-link text-primary ri-xl"></i>
+</div>
+<h3 class="text-xl font-medium text-gray-900 mb-3">관계</h3>
+<p class="text-gray-700">
+개념 간의 연결을 나타냅니다. '사과'는 '과일'의 일종이라는 관계가 대표적인 예입니다.
+</p>
+</div>
+<div class="bg-white rounded-lg shadow-sm p-6">
+<div class="w-12 h-12 flex items-center justify-center bg-primary bg-opacity-10 rounded-full mb-4">
+<i class="ri-instance-line text-primary ri-xl"></i>
+</div>
+<h3 class="text-xl font-medium text-gray-900 mb-3">인스턴스</h3>
+<p class="text-gray-700">
+클래스의 구체적인 사례를 나타냅니다. '후지 사과'는 '사과' 클래스의 인스턴스입니다.
+</p>
+</div>
+</div>
+<!-- 구성요소 예시 -->
+<div class="bg-white rounded-lg shadow-sm p-6">
+<h3 class="text-xl font-medium text-gray-900 mb-4">구성요소 예시: 자동차 온톨로지</h3>
+<div class="overflow-x-auto">
+<table class="min-w-full divide-y divide-gray-200">
+<thead>
+<tr>
+<th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">구성요소</th>
+<th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">예시</th>
+<th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">설명</th>
+</tr>
+</thead>
+<tbody class="bg-white divide-y divide-gray-200">
+<tr>
+<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">클래스</td>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">자동차, 승용차, SUV, 트럭</td>
+<td class="px-6 py-4 text-sm text-gray-700">자동차의 종류를 나타내는 개념</td>
+</tr>
+<tr>
+<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">속성</td>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">색상, 제조사, 연식, 연료 타입</td>
+<td class="px-6 py-4 text-sm text-gray-700">자동차가 가질 수 있는 특성</td>
+</tr>
+<tr>
+<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">관계</td>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">SUV는 자동차의 일종이다</td>
+<td class="px-6 py-4 text-sm text-gray-700">개념 간의 계층적 관계</td>
+</tr>
+<tr>
+<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">인스턴스</td>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">현대 투싼 2023년형</td>
+<td class="px-6 py-4 text-sm text-gray-700">SUV 클래스의 구체적인 예</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<!-- 중요성 섹션 -->
+<section id="importance" class="mb-16">
+<h2 class="text-2xl font-bold text-gray-900 mb-6">온톨로지의 중요성</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+<div class="bg-white rounded-lg shadow-sm p-6">
+<div class="w-12 h-12 flex items-center justify-center bg-primary bg-opacity-10 rounded-full mb-4">
+<i class="ri-brain-line text-primary ri-xl"></i>
+</div>
+<h3 class="text-lg font-medium text-gray-900 mb-3">정보의 의미 파악</h3>
+<p class="text-gray-700">
+컴퓨터가 데이터를 단순히 문자나 숫자로 처리하는 것이 아니라, 그 의미를 이해하고 처리할 수 있게 합니다.
+</p>
+</div>
+<div class="bg-white rounded-lg shadow-sm p-6">
+<div class="w-12 h-12 flex items-center justify-center bg-primary bg-opacity-10 rounded-full mb-4">
+<i class="ri-share-forward-line text-primary ri-xl"></i>
+</div>
+<h3 class="text-lg font-medium text-gray-900 mb-3">지식의 통합과 공유</h3>
+<p class="text-gray-700">
+서로 다른 시스템이나 사람들 사이에서 지식을 명확하게 공유할 수 있게 해줍니다.
+</p>
+</div>
+<div class="bg-white rounded-lg shadow-sm p-6">
+<div class="w-12 h-12 flex items-center justify-center bg-primary bg-opacity-10 rounded-full mb-4">
+<i class="ri-search-eye-line text-primary ri-xl"></i>
+</div>
+<h3 class="text-lg font-medium text-gray-900 mb-3">지능형 검색</h3>
+<p class="text-gray-700">
+'빨간 과일'을 검색했을 때, 직접적으로 '빨간 과일'이라는 단어가 포함되지 않더라도 '사과'나 '체리'와 같은 결과를 찾을 수 있게 합니다.
+</p>
+</div>
+<div class="bg-white rounded-lg shadow-sm p-6">
+<div class="w-12 h-12 flex items-center justify-center bg-primary bg-opacity-10 rounded-full mb-4">
+<i class="ri-lightbulb-line text-primary ri-xl"></i>
+</div>
+<h3 class="text-lg font-medium text-gray-900 mb-3">새로운 지식 발견</h3>
+<p class="text-gray-700">
+기존 지식 간의 관계를 통해 명시적으로 기술되지 않은 새로운 정보를 추론할 수 있습니다.
+</p>
+</div>
+<div class="bg-white rounded-lg shadow-sm p-6">
+<div class="w-12 h-12 flex items-center justify-center bg-primary bg-opacity-10 rounded-full mb-4">
+<i class="ri-robot-line text-primary ri-xl"></i>
+</div>
+<h3 class="text-lg font-medium text-gray-900 mb-3">인공지능의 기반</h3>
+<p class="text-gray-700">
+인공지능이 세상을 이해하고 추론하는 데 필요한 지식 구조를 제공합니다.
+</p>
+</div>
+<div class="bg-white rounded-lg shadow-sm p-6 flex flex-col justify-center">
+<div class="text-center">
+<div class="inline-block w-12 h-12 flex items-center justify-center bg-primary bg-opacity-10 rounded-full mb-4">
+<i class="ri-more-line text-primary ri-xl"></i>
+</div>
+<button class="text-primary hover:underline font-medium">더 많은 이점 보기</button>
+</div>
+</div>
+</div>
+<!-- 중요성 차트 -->
+<div class="bg-white rounded-lg shadow-sm p-6">
+<h3 class="text-xl font-medium text-gray-900 mb-4">온톨로지 활용 분야별 성장률</h3>
+<div id="importanceChart" class="w-full h-80"></div>
+</div>
+</section>
+<!-- 기존 데이터와의 차이 섹션 -->
+<section id="difference" class="mb-16">
+<h2 class="text-2xl font-bold text-gray-900 mb-6">온톨로지와 기존 데이터의 차이</h2>
+<div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+<p class="text-gray-700 mb-4">
+온톨로지와 기존 데이터베이스의 차이를 이해하기 위해 '도서관' 비유를 사용해 보겠습니다:
+</p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
+<div class="bg-gray-50 rounded-lg p-6">
+<h3 class="text-lg font-medium text-gray-900 mb-3 flex items-center">
+<div class="w-6 h-6 flex items-center justify-center bg-gray-200 rounded-full mr-2 text-gray-700">
+<i class="ri-database-2-line"></i>
+</div>
+기존 데이터베이스
+</h3>
+<p class="text-gray-700 mb-4">
+도서관의 카드 카탈로그와 같습니다:
+</p>
+<ul class="space-y-2 text-gray-700">
+<li class="flex items-start">
+<div class="w-5 h-5 flex items-center justify-center mt-0.5 mr-2 text-gray-500">
+<i class="ri-checkbox-blank-circle-line ri-xs"></i>
+</div>
+<span>책을 찾으려면 정확한 정보(제목 또는 저자)를 알아야 합니다.</span>
+</li>
+<li class="flex items-start">
+<div class="w-5 h-5 flex items-center justify-center mt-0.5 mr-2 text-gray-500">
+<i class="ri-checkbox-blank-circle-line ri-xs"></i>
+</div>
+<span>카드 간의 관계는 제한적이고, 대부분 독립적으로 존재합니다.</span>
+</li>
+</ul>
+</div>
+<div class="bg-primary bg-opacity-5 rounded-lg p-6">
+<h3 class="text-lg font-medium text-gray-900 mb-3 flex items-center">
+<div class="w-6 h-6 flex items-center justify-center bg-primary bg-opacity-20 rounded-full mr-2 text-primary">
+<i class="ri-mind-map"></i>
+</div>
+온톨로지
+</h3>
+<p class="text-gray-700 mb-4">
+지식이 풍부한 사서와 같습니다:
+</p>
+<ul class="space-y-2 text-gray-700">
+<li class="flex items-start">
+<div class="w-5 h-5 flex items-center justify-center mt-0.5 mr-2 text-primary">
+<i class="ri-checkbox-blank-circle-line ri-xs"></i>
+</div>
+<span>모든 책의 내용과 그들 사이의 관계를 깊이 이해합니다.</span>
+</li>
+<li class="flex items-start">
+<div class="w-5 h-5 flex items-center justify-center mt-0.5 mr-2 text-primary">
+<i class="ri-checkbox-blank-circle-line ri-xs"></i>
+</div>
+<span>한 책이 다른 책에 영향을 주었거나, 비슷한 개념을 다루고 있다는 것을 알고 있습니다.</span>
+</li>
+<li class="flex items-start">
+<div class="w-5 h-5 flex items-center justify-center mt-0.5 mr-2 text-primary">
+<i class="ri-checkbox-blank-circle-line ri-xs"></i>
+</div>
+<span>책의 내용 사이의 숨겨진 연결고리를 발견하고 추천할 수 있습니다.</span>
+</li>
+</ul>
+</div>
+</div>
+<p class="text-gray-700 font-medium">
+즉, 기존 데이터베이스가 정보의 '저장과 검색'에 중점을 둔다면, 온톨로지는 정보의 '의미와 관계'에 중점을 둡니다.
+</p>
+</div>
+<!-- 비교 표 -->
+<div class="bg-white rounded-lg shadow-sm p-6">
+<h3 class="text-xl font-medium text-gray-900 mb-4">온톨로지와 데이터베이스 비교</h3>
+<div class="overflow-x-auto">
+<table class="min-w-full divide-y divide-gray-200">
+<thead>
+<tr>
+<th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">특성</th>
+<th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">관계형 데이터베이스</th>
+<th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">온톨로지</th>
+</tr>
+</thead>
+<tbody class="bg-white divide-y divide-gray-200">
+<tr>
+<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">목적</td>
+<td class="px-6 py-4 text-sm text-gray-700">데이터 저장 및 검색</td>
+<td class="px-6 py-4 text-sm text-gray-700">지식 표현 및 추론</td>
+</tr>
+<tr>
+<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">구조</td>
+<td class="px-6 py-4 text-sm text-gray-700">테이블, 행, 열</td>
+<td class="px-6 py-4 text-sm text-gray-700">개념, 관계, 속성</td>
+</tr>
+<tr>
+<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">관계 표현</td>
+<td class="px-6 py-4 text-sm text-gray-700">제한적 (외래 키)</td>
+<td class="px-6 py-4 text-sm text-gray-700">풍부하고 다양한 관계 표현</td>
+</tr>
+<tr>
+<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">의미 처리</td>
+<td class="px-6 py-4 text-sm text-gray-700">명시적 프로그래밍 필요</td>
+<td class="px-6 py-4 text-sm text-gray-700">내재된 의미 관계</td>
+</tr>
+<tr>
+<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">확장성</td>
+<td class="px-6 py-4 text-sm text-gray-700">스키마 변경이 어려움</td>
+<td class="px-6 py-4 text-sm text-gray-700">유연한 확장 가능</td>
+</tr>
+<tr>
+<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">추론 능력</td>
+<td class="px-6 py-4 text-sm text-gray-700">없음</td>
+<td class="px-6 py-4 text-sm text-gray-700">내장된 추론 기능</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<!-- 적용 과정 섹션 -->
+<section id="process" class="mb-16">
+<h2 class="text-2xl font-bold text-gray-900 mb-6">온톨로지 적용 과정</h2>
+<div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+<div class="space-y-8">
+<div class="flex">
+<div class="flex-shrink-0">
+<div class="flex items-center justify-center w-10 h-10 rounded-full bg-primary text-white font-bold">1</div>
+</div>
+<div class="ml-6">
+<h3 class="text-xl font-medium text-gray-900 mb-2">목적과 범위 설정</h3>
+<p class="text-gray-700">
+온톨로지가 해결하고자 하는 문제와 다루게 될 지식 영역을 명확히 합니다.
+</p>
+</div>
+</div>
+<div class="flex">
+<div class="flex-shrink-0">
+<div class="flex items-center justify-center w-10 h-10 rounded-full bg-primary text-white font-bold">2</div>
+</div>
+<div class="ml-6">
+<h3 class="text-xl font-medium text-gray-900 mb-2">개념 수집과 정리</h3>
+<p class="text-gray-700 mb-3">
+해당 분야의 중요한 개념들을 모으고 정리합니다. 전문가 인터뷰, 문헌 조사 등을 통해 핵심 용어와 개념을 수집합니다.
+</p>
+<div class="bg-gray-50 rounded-lg p-4">
+<h4 class="font-medium text-gray-900 mb-2">개념 수집 방법</h4>
+<ul class="space-y-2 text-sm text-gray-700">
+<li class="flex items-start">
+<div class="w-5 h-5 flex items-center justify-center mt-0.5 mr-2 text-primary">
+<i class="ri-check-line"></i>
+</div>
+<span>전문가 인터뷰 및 워크숍</span>
+</li>
+<li class="flex items-start">
+<div class="w-5 h-5 flex items-center justify-center mt-0.5 mr-2 text-primary">
+<i class="ri-check-line"></i>
+</div>
+<span>관련 문헌 및 자료 분석</span>
+</li>
+<li class="flex items-start">
+<div class="w-5 h-5 flex items-center justify-center mt-0.5 mr-2 text-primary">
+<i class="ri-check-line"></i>
+</div>
+<span>기존 용어집 및 분류체계 참조</span>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="flex">
+<div class="flex-shrink-0">
+<div class="flex items-center justify-center w-10 h-10 rounded-full bg-primary text-white font-bold">3</div>
+</div>
+<div class="ml-6">
+<h3 class="text-xl font-medium text-gray-900 mb-2">개념 간 관계 정의</h3>
+<p class="text-gray-700">
+수집된 개념들 사이의 관계를 정립합니다. "A는 B의 일종이다", "X는 Y를 포함한다", "P는 Q에 영향을 미친다" 등의 관계를 정의합니다.
+</p>
+</div>
+</div>
+<div class="flex">
+<div class="flex-shrink-0">
+<div class="flex items-center justify-center w-10 h-10 rounded-full bg-primary text-white font-bold">4</div>
+</div>
+<div class="ml-6">
+<h3 class="text-xl font-medium text-gray-900 mb-2">계층 구조 구성</h3>
+<p class="text-gray-700">
+개념들을 상위-하위 관계로 조직화합니다. 예를 들어, '포유류'는 '동물'의 하위 개념, '고양이'는 '포유류'의 하위 개념으로 구성합니다.
+</p>
+</div>
+</div>
+<div class="flex">
+<div class="flex-shrink-0">
+<div class="flex items-center justify-center w-10 h-10 rounded-full bg-primary text-white font-bold">5</div>
+</div>
+<div class="ml-6">
+<h3 class="text-xl font-medium text-gray-900 mb-2">속성 정의</h3>
+<p class="text-gray-700">
+각 개념이 가질 수 있는 속성(특성)들을 정의합니다. '자동차'라는 개념에는 '색상', '제조사', '연식' 등의 속성을 부여합니다.
+</p>
+</div>
+</div>
+<div class="flex">
+<div class="flex-shrink-0">
+<div class="flex items-center justify-center w-10 h-10 rounded-full bg-primary text-white font-bold">6</div>
+</div>
+<div class="ml-6">
+<h3 class="text-xl font-medium text-gray-900 mb-2">규칙과 제약 설정</h3>
+<p class="text-gray-700">
+개념과 관계에 적용되는 규칙이나 제약을 설정합니다. 예: "모든 학사 학위 소지자는 고등학교 졸업자이다"와 같은 논리적 규칙을 정의합니다.
+</p>
+</div>
+</div>
+<div class="flex">
+<div class="flex-shrink-0">
+<div class="flex items-center justify-center w-10 h-10 rounded-full bg-primary text-white font-bold">7</div>
+</div>
+<div class="ml-6">
+<h3 class="text-xl font-medium text-gray-900 mb-2">온톨로지 구현</h3>
+<p class="text-gray-700 mb-3">
+정의된 개념, 관계, 규칙을 OWL(Web Ontology Language)이나 RDF(Resource Description Framework) 같은 온톨로지 언어로 구현합니다.
+</p>
+<div class="bg-gray-50 rounded-lg p-4">
+<h4 class="font-medium text-gray-900 mb-2">주요 온톨로지 언어</h4>
+<div class="grid grid-cols-2 gap-2">
+<div class="flex items-center bg-white rounded p-2">
+<div class="w-8 h-8 flex items-center justify-center bg-blue-100 rounded-full mr-2">
+<i class="ri-code-line text-blue-600"></i>
+</div>
+<span class="text-sm">OWL</span>
+</div>
+<div class="flex items-center bg-white rounded p-2">
+<div class="w-8 h-8 flex items-center justify-center bg-green-100 rounded-full mr-2">
+<i class="ri-code-line text-green-600"></i>
+</div>
+<span class="text-sm">RDF</span>
+</div>
+<div class="flex items-center bg-white rounded p-2">
+<div class="w-8 h-8 flex items-center justify-center bg-purple-100 rounded-full mr-2">
+<i class="ri-code-line text-purple-600"></i>
+</div>
+<span class="text-sm">RDFS</span>
+</div>
+<div class="flex items-center bg-white rounded p-2">
+<div class="w-8 h-8 flex items-center justify-center bg-orange-100 rounded-full mr-2">
+<i class="ri-code-line text-orange-600"></i>
+</div>
+<span class="text-sm">SPARQL</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="flex">
+<div class="flex-shrink-0">
+<div class="flex items-center justify-center w-10 h-10 rounded-full bg-primary text-white font-bold">8</div>
+</div>
+<div class="ml-6">
+<h3 class="text-xl font-medium text-gray-900 mb-2">응용 시스템 통합</h3>
+<p class="text-gray-700">
+온톨로지를 실제 응용 프로그램이나 시스템에 통합합니다. 검색 엔진, 추천 시스템, 의사결정 지원 시스템 등에 온톨로지를 활용합니다.
+</p>
+</div>
+</div>
+<div class="flex">
+<div class="flex-shrink-0">
+<div class="flex items-center justify-center w-10 h-10 rounded-full bg-primary text-white font-bold">9</div>
+</div>
+<div class="ml-6">
+<h3 class="text-xl font-medium text-gray-900 mb-2">검증과 개선</h3>
+<p class="text-gray-700">
+구축된 온톨로지가 원래 목적에 부합하는지 검증합니다. 전문가 평가, 실제 사용 사례 테스트 등을 통해 지속적으로 개선합니다.
+</p>
+</div>
+</div>
+</div>
+</div>
+<!-- 적용 사례 -->
+<div class="bg-white rounded-lg shadow-sm p-6">
+<h3 class="text-xl font-medium text-gray-900 mb-4">온톨로지 적용 사례</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="bg-gray-50 rounded-lg p-5">
+<div class="flex items-center mb-4">
+<div class="w-10 h-10 flex items-center justify-center bg-blue-100 rounded-full mr-3">
+<i class="ri-hospital-line text-blue-600"></i>
+</div>
+<h4 class="font-medium text-gray-900">의료 분야</h4>
+</div>
+<p class="text-sm text-gray-700 mb-3">
+의료 온톨로지는 질병, 증상, 치료법 간의 복잡한 관계를 모델링하여 진단 지원 시스템과 의학 연구에 활용됩니다.
+</p>
+<p class="text-sm text-gray-700">
+예: SNOMED CT는 전 세계적으로 사용되는 의료 용어 온톨로지로, 35만 개 이상의 의학 개념을 포함하고 있습니다.
+</p>
+</div>
+<div class="bg-gray-50 rounded-lg p-5">
+<div class="flex items-center mb-4">
+<div class="w-10 h-10 flex items-center justify-center bg-green-100 rounded-full mr-3">
+<i class="ri-shopping-cart-line text-green-600"></i>
+</div>
+<h4 class="font-medium text-gray-900">전자상거래</h4>
+</div>
+<p class="text-sm text-gray-700 mb-3">
+제품 온톨로지는 상품 카테고리, 속성, 브랜드 간의 관계를 정의하여 정확한 검색과 추천 시스템을 구현합니다.
+</p>
+<p class="text-sm text-gray-700">
+예: 아마존의 제품 분류 시스템은 온톨로지를 기반으로 수백만 개의 제품을 체계적으로 관리합니다.
+</p>
+</div>
+</div>
+</div>
+</section>
+<!-- 추가 학습 자료 -->
+<section class="mb-16">
+<div class="bg-gradient-to-r from-primary/5 to-secondary/5 rounded-lg p-8">
+<h2 class="text-2xl font-bold text-gray-900 mb-6">더 알아보기</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<a href="#" class="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
+<div class="w-12 h-12 flex items-center justify-center bg-primary bg-opacity-10 rounded-full mb-4">
+<i class="ri-book-open-line text-primary ri-xl"></i>
+</div>
+<h3 class="text-lg font-medium text-gray-900 mb-2">온톨로지 구축 가이드</h3>
+<p class="text-sm text-gray-700 mb-4">
+실제 프로젝트에서 온톨로지를 구축하는 단계별 가이드와 모범 사례를 알아보세요.
+</p>
+<div class="flex items-center text-primary">
+<span class="font-medium">자세히 보기</span>
+<div class="w-5 h-5 flex items-center justify-center ml-1">
+<i class="ri-arrow-right-line"></i>
+</div>
+</div>
+</a>
+<a href="#" class="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
+<div class="w-12 h-12 flex items-center justify-center bg-primary bg-opacity-10 rounded-full mb-4">
+<i class="ri-tools-line text-primary ri-xl"></i>
+</div>
+<h3 class="text-lg font-medium text-gray-900 mb-2">온톨로지 개발 도구</h3>
+<p class="text-sm text-gray-700 mb-4">
+Protégé, TopBraid Composer 등 온톨로지 개발에 사용되는 주요 도구들을 비교해보세요.
+</p>
+<div class="flex items-center text-primary">
+<span class="font-medium">자세히 보기</span>
+<div class="w-5 h-5 flex items-center justify-center ml-1">
+<i class="ri-arrow-right-line"></i>
+</div>
+</div>
+</a>
+<a href="#" class="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
+<div class="w-12 h-12 flex items-center justify-center bg-primary bg-opacity-10 rounded-full mb-4">
+<i class="ri-code-box-line text-primary ri-xl"></i>
+</div>
+<h3 class="text-lg font-medium text-gray-900 mb-2">온톨로지 언어 튜토리얼</h3>
+<p class="text-sm text-gray-700 mb-4">
+OWL, RDF, SPARQL 등 온톨로지 개발에 사용되는 언어들의 기초부터 고급 기능까지 배워보세요.
+</p>
+<div class="flex items-center text-primary">
+<span class="font-medium">자세히 보기</span>
+<div class="w-5 h-5 flex items-center justify-center ml-1">
+<i class="ri-arrow-right-line"></i>
+</div>
+</div>
+</a>
+</div>
+</div>
+</section>
+<!-- 질문과 답변 -->
+<section class="mb-16">
+<h2 class="text-2xl font-bold text-gray-900 mb-6">자주 묻는 질문</h2>
+<div class="space-y-4">
+<div class="bg-white rounded-lg shadow-sm overflow-hidden">
+<button class="w-full flex items-center justify-between p-6 text-left" onclick="toggleFAQ(this)">
+<h3 class="text-lg font-medium text-gray-900">온톨로지와 분류체계(Taxonomy)의 차이점은 무엇인가요?</h3>
+<div class="w-6 h-6 flex items-center justify-center text-gray-500">
+<i class="ri-arrow-down-s-line"></i>
+</div>
+</button>
+<div class="hidden px-6 pb-6 pt-0">
+<p class="text-gray-700">
+분류체계(Taxonomy)는 개념들을 계층적으로 분류하는 데 중점을 두는 반면, 온톨로지는 개념 간의 다양한 관계와 속성까지 정의합니다.
+분류체계가 '상위-하위' 관계만 다룬다면, 온톨로지는 '부분-전체', '원인-결과', '사용-도구' 등 다양한 관계를 표현할 수 있습니다.
+또한 온톨로지는 논리적 규칙과 제약을 포함하여 추론 기능을 제공합니다.
+</p>
+</div>
+</div>
+<div class="bg-white rounded-lg shadow-sm overflow-hidden">
+<button class="w-full flex items-center justify-between p-6 text-left" onclick="toggleFAQ(this)">
+<h3 class="text-lg font-medium text-gray-900">온톨로지 구축에 필요한 전문 지식은 무엇인가요?</h3>
+<div class="w-6 h-6 flex items-center justify-center text-gray-500">
+<i class="ri-arrow-down-s-line"></i>
+</div>
+</button>
+<div class="hidden px-6 pb-6 pt-0">
+<p class="text-gray-700">
+온톨로지 구축에는 다음과 같은 지식이 필요합니다:
+</p>
+<ul class="mt-3 space-y-2 text-gray-700">
+<li class="flex items-start">
+<div class="w-5 h-5 flex items-center justify-center mt-0.5 mr-2 text-primary">
+<i class="ri-check-line"></i>
+</div>
+<span>해당 도메인에 대한 전문 지식</span>
+</li>
+<li class="flex items-start">
+<div class="w-5 h-5 flex items-center justify-center mt-0.5 mr-2 text-primary">
+<i class="ri-check-line"></i>
+</div>
+<span>지식 표현 및 모델링 기술</span>
+</li>
+<li class="flex items-start">
+<div class="w-5 h-5 flex items-center justify-center mt-0.5 mr-2 text-primary">
+<i class="ri-check-line"></i>
+</div>
+<span>OWL, RDF 등의 온톨로지 언어</span>
+</li>
+<li class="flex items-start">
+<div class="w-5 h-5 flex items-center justify-center mt-0.5 mr-2 text-primary">
+<i class="ri-check-line"></i>
+</div>
+<span>Protégé 등의 온톨로지 편집 도구 사용법</span>
+</li>
+<li class="flex items-start">
+<div class="w-5 h-5 flex items-center justify-center mt-0.5 mr-2 text-primary">
+<i class="ri-check-line"></i>
+</div>
+<span>논리적 추론 및 형식 논리학의 기초</span>
+</li>
+</ul>
+</div>
+</div>
+<div class="bg-white rounded-lg shadow-sm overflow-hidden">
+<button class="w-full flex items-center justify-between p-6 text-left" onclick="toggleFAQ(this)">
+<h3 class="text-lg font-medium text-gray-900">소규모 프로젝트에도 온톨로지가 필요한가요?</h3>
+<div class="w-6 h-6 flex items-center justify-center text-gray-500">
+<i class="ri-arrow-down-s-line"></i>
+</div>
+</button>
+<div class="hidden px-6 pb-6 pt-0">
+<p class="text-gray-700">
+모든 프로젝트에 온톨로지가 필요한 것은 아닙니다. 온톨로지 구축은 시간과 자원이 많이 소요되므로,
+다음과 같은 경우에 더 적합합니다:
+</p>
+<ul class="mt-3 space-y-2 text-gray-700">
+<li class="flex items-start">
+<div class="w-5 h-5 flex items-center justify-center mt-0.5 mr-2 text-primary">
+<i class="ri-check-line"></i>
+</div>
+<span>복잡한 도메인 지식을 다루는 경우</span>
+</li>
+<li class="flex items-start">
+<div class="w-5 h-5 flex items-center justify-center mt-0.5 mr-2 text-primary">
+<i class="ri-check-line"></i>
+</div>
+<span>여러 시스템 간 지식 공유가 필요한 경우</span>
+</li>
+<li class="flex items-start">
+<div class="w-5 h-5 flex items-center justify-center mt-0.5 mr-2 text-primary">
+<i class="ri-check-line"></i>
+</div>
+<span>지능형 검색이나 추천 기능이 중요한 경우</span>
+</li>
+<li class="flex items-start">
+<div class="w-5 h-5 flex items-center justify-center mt-0.5 mr-2 text-primary">
+<i class="ri-check-line"></i>
+</div>
+<span>데이터의 의미적 통합이 필요한 경우</span>
+</li>
+</ul>
+<p class="mt-3 text-gray-700">
+소규모 프로젝트에서는 간단한 분류체계나 데이터 모델로도 충분할 수 있습니다.
+</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+</main>
+<!-- 뉴스레터 구독 -->
+<section class="bg-gradient-bg py-16">
+<div class="container mx-auto px-4">
+<div class="max-w-3xl mx-auto text-center">
+<h2 class="text-2xl font-bold text-gray-900 mb-4">온톨로지 소식 받아보기</h2>
+<p class="text-gray-700 mb-8">
+최신 온톨로지 연구, 도구, 적용 사례에 대한 소식을 정기적으로 받아보세요.
+</p>
+<div class="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
+<input type="email" placeholder="이메일 주소를 입력하세요" class="flex-grow px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+<button class="bg-primary text-white px-6 py-3 rounded-button hover:bg-opacity-90 transition-colors whitespace-nowrap">구독하기</button>
+</div>
+<p class="text-xs text-gray-500 mt-4">
+구독은 언제든지 취소할 수 있으며, 개인정보는 안전하게 보호됩니다.
+</p>
+</div>
+</div>
+</section>
+<!-- 푸터 -->
+<footer class="bg-gray-50 py-12">
+<div class="container mx-auto px-4">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+<div>
+<a href="#" class="text-2xl font-['Pacifico'] text-primary mb-4 inline-block">logo</a>
+<p class="text-gray-600 mb-4">
+온톨로지의 개념과 적용에 대한 종합적인 학습 플랫폼입니다.
+</p>
+<div class="flex space-x-4">
+<a href="#" class="text-gray-400 hover:text-primary transition-colors">
+<div class="w-8 h-8 flex items-center justify-center">
+<i class="ri-facebook-fill"></i>
+</div>
+</a>
+<a href="#" class="text-gray-400 hover:text-primary transition-colors">
+<div class="w-8 h-8 flex items-center justify-center">
+<i class="ri-twitter-x-fill"></i>
+</div>
+</a>
+<a href="#" class="text-gray-400 hover:text-primary transition-colors">
+<div class="w-8 h-8 flex items-center justify-center">
+<i class="ri-linkedin-fill"></i>
+</div>
+</a>
+<a href="#" class="text-gray-400 hover:text-primary transition-colors">
+<div class="w-8 h-8 flex items-center justify-center">
+<i class="ri-github-fill"></i>
+</div>
+</a>
+</div>
+</div>
+<div>
+<h3 class="text-lg font-medium text-gray-900 mb-4">학습 자료</h3>
+<ul class="space-y-3 text-gray-600">
+<li><a href="#" class="hover:text-primary transition-colors">온톨로지 기초</a></li>
+<li><a href="#" class="hover:text-primary transition-colors">개발 도구</a></li>
+<li><a href="#" class="hover:text-primary transition-colors">적용 사례</a></li>
+<li><a href="#" class="hover:text-primary transition-colors">튜토리얼</a></li>
+<li><a href="#" class="hover:text-primary transition-colors">연구 논문</a></li>
+</ul>
+</div>
+<div>
+<h3 class="text-lg font-medium text-gray-900 mb-4">커뮤니티</h3>
+<ul class="space-y-3 text-gray-600">
+<li><a href="#" class="hover:text-primary transition-colors">포럼</a></li>
+<li><a href="#" class="hover:text-primary transition-colors">Q&A</a></li>
+<li><a href="#" class="hover:text-primary transition-colors">이벤트</a></li>
+<li><a href="#" class="hover:text-primary transition-colors">워크숍</a></li>
+<li><a href="#" class="hover:text-primary transition-colors">기여하기</a></li>
+</ul>
+</div>
+<div>
+<h3 class="text-lg font-medium text-gray-900 mb-4">연락처</h3>
+<ul class="space-y-3 text-gray-600">
+<li class="flex items-start">
+<div class="w-5 h-5 flex items-center justify-center mt-0.5 mr-2 text-primary">
+<i class="ri-mail-line"></i>
+</div>
+<span>contact@ontology-learn.kr</span>
+</li>
+<li class="flex items-start">
+<div class="w-5 h-5 flex items-center justify-center mt-0.5 mr-2 text-primary">
+<i class="ri-phone-line"></i>
+</div>
+<span>02-123-4567</span>
+</li>
+<li class="flex items-start">
+<div class="w-5 h-5 flex items-center justify-center mt-0.5 mr-2 text-primary">
+<i class="ri-map-pin-line"></i>
+</div>
+<span>서울특별시 강남구 테헤란로 123</span>
+</li>
+</ul>
+</div>
+</div>
+<div class="border-t border-gray-200 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+<p class="text-gray-600 text-sm mb-4 md:mb-0">
+© 2025 온톨로지 학습 플랫폼. All rights reserved.
+</p>
+<div class="flex space-x-6 text-sm text-gray-600">
+<a href="#" class="hover:text-primary transition-colors">이용약관</a>
+<a href="#" class="hover:text-primary transition-colors">개인정보처리방침</a>
+<a href="#" class="hover:text-primary transition-colors">쿠키정책</a>
+</div>
+</div>
+</div>
+</footer>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+// 온톨로지 차트
+const ontologyChart = echarts.init(document.getElementById('ontologyChart'));
+const ontologyOption = {
+animation: false,
+tooltip: {
+trigger: 'item',
+backgroundColor: 'rgba(255, 255, 255, 0.9)',
+borderColor: '#eee',
+borderWidth: 1,
+textStyle: {
+color: '#1f2937'
+}
+},
+series: [{
+type: 'graph',
+layout: 'force',
+roam: true,
+draggable: true,
+label: {
+show: true,
+position: 'right',
+formatter: '{b}',
+color: '#1f2937',
+fontSize: 14
+},
+edgeLabel: {
+show: true,
+formatter: '{c}',
+fontSize: 12,
+color: '#666',
+},
+force: {
+repulsion: 400,
+edgeLength: 200,
+gravity: 0.1,
+layoutAnimation: false
+},
+data: [
+{ name: '과일', symbolSize: 70, itemStyle: { color: 'rgba(87, 181, 231, 1)' }, x: 0, y: 0, fixed: true },
+{ name: '사과', symbolSize: 50, itemStyle: { color: 'rgba(141, 211, 199, 1)' }, x: -200, y: -100 },
+{ name: '배', symbolSize: 50, itemStyle: { color: 'rgba(141, 211, 199, 1)' }, x: 0, y: -150 },
+{ name: '포도', symbolSize: 50, itemStyle: { color: 'rgba(141, 211, 199, 1)' }, x: 200, y: -100 },
+{ name: '빨간색', symbolSize: 35, itemStyle: { color: 'rgba(251, 191, 114, 1)' }, x: -300, y: 50 },
+{ name: '초록색', symbolSize: 35, itemStyle: { color: 'rgba(251, 191, 114, 1)' }, x: -100, y: 100 },
+{ name: '보라색', symbolSize: 35, itemStyle: { color: 'rgba(251, 191, 114, 1)' }, x: 300, y: 50 },
+{ name: '달콤한 맛', symbolSize: 35, itemStyle: { color: 'rgba(252, 141, 98, 1)' }, x: 100, y: 100 },
+{ name: '신맛', symbolSize: 35, itemStyle: { color: 'rgba(252, 141, 98, 1)' }, x: -200, y: 150 },
+{ name: '후지 사과', symbolSize: 30, itemStyle: { color: 'rgba(141, 211, 199, 0.7)' }, x: -350, y: -50 }
+],
+links: [
+{ source: '과일', target: '사과', value: '상위개념', lineStyle: { width: 2, curveness: 0.2 } },
+{ source: '과일', target: '배', value: '상위개념', lineStyle: { width: 2, curveness: 0.1 } },
+{ source: '과일', target: '포도', value: '상위개념', lineStyle: { width: 2, curveness: 0.2 } },
+{ source: '사과', target: '빨간색', value: '색상', lineStyle: { width: 1.5, curveness: 0.3 } },
+{ source: '사과', target: '초록색', value: '색상', lineStyle: { width: 1.5, curveness: 0.3 } },
+{ source: '배', target: '초록색', value: '색상', lineStyle: { width: 1.5, curveness: 0.3 } },
+{ source: '포도', target: '보라색', value: '색상', lineStyle: { width: 1.5, curveness: 0.3 } },
+{ source: '사과', target: '달콤한 맛', value: '맛', lineStyle: { width: 1.5, curveness: 0.3 } },
+{ source: '사과', target: '신맛', value: '맛', lineStyle: { width: 1.5, curveness: 0.3 } },
+{ source: '배', target: '달콤한 맛', value: '맛', lineStyle: { width: 1.5, curveness: 0.3 } },
+{ source: '포도', target: '달콤한 맛', value: '맛', lineStyle: { width: 1.5, curveness: 0.3 } },
+{ source: '사과', target: '후지 사과', value: '인스턴스', lineStyle: { width: 1, curveness: 0.2 } }
+],
+lineStyle: {
+color: '#aaa',
+opacity: 0.6,
+width: 1.5,
+curveness: 0.3
+},
+emphasis: {
+focus: 'adjacency',
+lineStyle: {
+width: 2,
+opacity: 1
+},
+label: {
+fontSize: 16
+}
+}
+}]
+};
+ontologyChart.setOption(ontologyOption);
+// 중요성 차트
+const importanceChart = echarts.init(document.getElementById('importanceChart'));
+const importanceOption = {
+animation: false,
+tooltip: {
+trigger: 'axis',
+backgroundColor: 'rgba(255, 255, 255, 0.9)',
+borderColor: '#eee',
+borderWidth: 1,
+textStyle: {
+color: '#1f2937'
+}
+},
+legend: {
+data: ['활용 성장률'],
+bottom: 0,
+textStyle: {
+color: '#1f2937'
+}
+},
+grid: {
+left: '3%',
+right: '4%',
+bottom: '10%',
+top: '3%',
+containLabel: true
+},
+xAxis: {
+type: 'category',
+data: ['의료', '전자상거래', '금융', '교육', '제조업'],
+axisLine: {
+lineStyle: {
+color: '#ddd'
+}
+},
+axisLabel: {
+color: '#666'
+}
+},
+yAxis: {
+type: 'value',
+name: '성장률 (%)',
+nameTextStyle: {
+color: '#666'
+},
+axisLine: {
+lineStyle: {
+color: '#ddd'
+}
+},
+axisLabel: {
+color: '#666',
+formatter: '{value}%'
+},
+splitLine: {
+lineStyle: {
+color: '#eee'
+}
+}
+},
+series: [
+{
+name: '활용 성장률',
+type: 'bar',
+data: [42, 38, 29, 25, 20],
+itemStyle: {
+color: 'rgba(87, 181, 231, 1)',
+borderRadius: 6
+},
+label: {
+show: true,
+position: 'top',
+formatter: '{c}%',
+color: '#666'
+}
+}
+]
+};
+importanceChart.setOption(importanceOption);
+// 반응형 처리
+window.addEventListener('resize', function() {
+ontologyChart.resize();
+importanceChart.resize();
+});
+});
+function toggleFAQ(element) {
+const content = element.nextElementSibling;
+const icon = element.querySelector('i');
+if (content.classList.contains('hidden')) {
+content.classList.remove('hidden');
+icon.classList.remove('ri-arrow-down-s-line');
+icon.classList.add('ri-arrow-up-s-line');
+} else {
+content.classList.add('hidden');
+icon.classList.remove('ri-arrow-up-s-line');
+icon.classList.add('ri-arrow-down-s-line');
+}
+}
+</script>
+</body>
+</html>
